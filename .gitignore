@@ -1,0 +1,30 @@
+# 运行时配置（真实值放这里，本文件不进版本库）
+.env
+.env.*
+!.env.example
+
+# 密钥与证书
+*.key
+*.pem
+id_rsa*
+id_ed25519*
+*_ed25519
+!*.pub
+known_hosts
+known_hosts.*
+.ssh/
+
+# 日志与备份
+*.log
+*.log.[0-9]*
+*.bak
+*.bak.*
+run/
+state/
+
+# 系统垃圾
+.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc
+node_modules/
