@@ -3,6 +3,16 @@
 ## 1. 日常自检（一条命令）
 
 ```bash
+bash sesame/verify.sh          # 0=健康 1=告警 2=异常
+bash sesame/verify.sh --quiet  # 只输出有问题的行
+bash sesame/verify.sh --json   # 机器可读，便于接监控
+```
+
+它会依次检查：服务状态、租约剩余时长、心跳是否断档、隧道重连次数、`btime` 是否被暂停恢复过、sshd 是否只绑回环。
+
+手动展开版（需要自己看清数字时）：
+
+```bash
 # 沙箱侧：服务、租约、心跳缺口、隧道重连次数
 sprite-env services list
 sprite-env curl -s /v1/tasks; echo
@@ -80,6 +90,20 @@ sprite-env services restart keepalive
 ```
 
 ## 6. 提交前查密（本仓库的硬要求）
+
+```bash
+bash scripts/secret-scan.sh     # 与 CI 里跑的是同一个脚本
+```
+
+它检查三类东西，任一类发现问题就退出 1：
+
+| 检查 | 内容 |
+|---|---|
+| A | 私钥 / 令牌形态（`BEGIN PRIVATE KEY`、`ghp_`、`sk-`、`ibk_`、`AKIA`…）|
+| B | 真实 IP（只允许回环 `127.0.0.1` 与 RFC 5737 文档段）|
+| C | `.env` / 日志 / `known_hosts` / 私钥是否被 git 跟踪 |
+
+更底层的手写命令（想自己看时用）：
 
 ```bash
 # 1) 常见密钥形态

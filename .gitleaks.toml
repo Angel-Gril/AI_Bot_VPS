@@ -1,0 +1,27 @@
+# gitleaks 配置：在默认规则之上，放行文档里刻意保留的占位符
+title = "AI_Bot_VPS"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "文档/模板里的占位符与示例值，不是真实凭据"
+paths = [
+  # 许可证文本里没有密钥，但默认规则偶尔会对长段落误报
+  '''LICENSE''',
+]
+
+regexes = [
+  # 指纹占位符，形如 SHA256:AAAAAAAAAAAAAAAA...
+  '''SHA256:AAAA[A-Za-z0-9+/=]*''',
+  # 公钥占位符
+  '''<TUNNEL_PUBKEY>''',
+  '''<JUMP_PUBKEY>''',
+  # RFC 5737 文档专用地址
+  '''203\.0\.113\.\d+''',
+  '''198\.51\.100\.\d+''',
+  '''192\.0\.2\.\d+''',
+  # 示例密钥名
+  '''ibk_xxx''',
+  '''sk-\.\.\.''',
+]

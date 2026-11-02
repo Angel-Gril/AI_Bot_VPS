@@ -1,5 +1,7 @@
 # AI_Bot_VPS · 云沙箱保活与零暴露 SSH 中转
 
+[![CI](https://github.com/Angel-Gril/AI_Bot_VPS/actions/workflows/ci.yml/badge.svg)](https://github.com/Angel-Gril/AI_Bot_VPS/actions/workflows/ci.yml)
+
 把"免费/低配云沙箱"当成可远程使用的开发机时，会撞上两类问题：
 
 1. **平台会自动挂起闲置机器** —— 保活要靠平台自己提供的"活动租约 / 任务"接口，光跑进程或开着 SSH 不算活跃。
@@ -12,9 +14,12 @@
 ## 组成
 
 ```
-sesame/        Sprite/Sesame 类容器沙箱：活动租约保活 + 反向 SSH 隧道 + 重建后一键恢复
+sesame/        Sprite/Sesame 类容器沙箱：活动租约保活 + 反向 SSH 隧道 + 一键安装恢复 + 自检
 instabox/      InstaBox 类云主机：外部租约续期脚本的 retryAfter 补丁
+scripts/       仓库工具（敏感信息自查）
+tests/         补丁自测（CI 跑）
 docs/          平台生命周期实测记录、SSH 中转设计、运维手册
+.github/       CI：查密 + shellcheck + POSIX 语法 + 补丁自测
 ```
 
 ## 架构一眼看懂
@@ -80,6 +85,15 @@ Host sandbox
 
 之后 `ssh sandbox` 即可。Windows/macOS/Linux/Termux 自带 OpenSSH 都支持 `-J`，**不需要装任何客户端**。
 
+## 健康自检
+
+```bash
+bash sesame/verify.sh          # 0=健康 1=告警 2=异常
+bash sesame/verify.sh --json   # 给监控/脚本用
+```
+
+检查项：服务是否在跑、租约剩余时长、心跳是否断档、隧道重连次数、`btime` 是否被暂停恢复过、sshd 是否只绑回环。
+
 ## 已验证的平台行为（重要，别凭直觉）
 
 | 平台 | 结论 | 文档 |
@@ -91,7 +105,7 @@ Host sandbox
 
 ## 安全须知
 
-- 本仓库**不含**任何私钥、API key、真实 IP、真实机器 ID。**提交前请自查**（见 `docs/04-runbook.md` 的检查清单）。
+- 本仓库**不含**任何私钥、API key、真实 IP、真实机器 ID。提交前请自查（`bash scripts/secret-scan.sh`），CI 也会强制跑一遍：密钥形态、真实 IP、`.env`/日志是否被跟踪。
 - 保活脚本会在平台侧产生"长期活跃"的行为特征。用之前请确认你遵守目标平台的服务条款。
 - 中转机是唯一公网入口，务必：禁密码登录、禁 root 密码、装 fail2ban、只放行必要端口。
 
