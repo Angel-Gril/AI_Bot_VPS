@@ -16,8 +16,9 @@
 # ============================================================
 set -u
 
-SELF_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" 2>/dev/null && pwd || echo /nonexistent)
+SELF_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" 2>/dev/null && pwd || echo /nonexistent)
 for f in "$SELF_DIR/../.env" "$SELF_DIR/.env"; do
+    # shellcheck source=/dev/null
     [ -f "$f" ] && . "$f"
 done
 

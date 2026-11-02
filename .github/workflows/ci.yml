@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # gitleaks 需要完整历史
       - name: 运行自查脚本
         run: bash scripts/secret-scan.sh
       - name: gitleaks（兜底，覆盖我们规则没写的形态）

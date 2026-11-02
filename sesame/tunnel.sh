@@ -13,7 +13,7 @@
 # ============================================================
 set -u
 
-SELF_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" 2>/dev/null && pwd || echo /nonexistent)
+SELF_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" 2>/dev/null && pwd || echo /nonexistent)
 [ -f "$SELF_DIR/.env" ] && . "$SELF_DIR/.env"
 [ -f "$SELF_DIR/../.env" ] && . "$SELF_DIR/../.env"
 
@@ -82,7 +82,7 @@ log "start $RELAY_LISTEN → $SANDBOX_TARGET via $RELAY_USER@$RELAY_HOST:$RELAY_
 
 delay=5
 while :; do
-    started=$SECONDS
+    started=$(date +%s)
     # -F /dev/null：忽略本机 ssh config，避免被无关配置干扰
     ssh -F /dev/null -N -T \
         -p "$RELAY_PORT" \
@@ -105,7 +105,7 @@ while :; do
     child=
 
     # 撑过 60s 视为"真的连通过"，重置退避；否则快速失败时逐步拉长间隔
-    if [ $((SECONDS - started)) -ge 60 ]; then delay=5; fi
+    if [ $(($(date +%s) - started)) -ge 60 ]; then delay=5; fi
     log "ssh 退出 rc=$rc，${delay}s 后重连"
     sleep "$delay"
     delay=$((delay * 2))

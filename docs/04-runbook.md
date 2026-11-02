@@ -99,7 +99,7 @@ bash scripts/secret-scan.sh     # 与 CI 里跑的是同一个脚本
 
 | 检查 | 内容 |
 |---|---|
-| A | 私钥 / 令牌形态（`BEGIN PRIVATE KEY`、`ghp_`、`sk-`、`ibk_`、`AKIA`…）|
+| A | 私钥块（PEM 头）、各类令牌前缀（GitHub / GitLab / OpenAI / 火山 / OCI 等）|
 | B | 真实 IP（只允许回环 `127.0.0.1` 与 RFC 5737 文档段）|
 | C | `.env` / 日志 / `known_hosts` / 私钥是否被 git 跟踪 |
 
